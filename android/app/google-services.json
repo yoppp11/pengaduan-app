@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "396084129750",
+    "project_id": "flutter-kekerasan-seksual",
+    "storage_bucket": "flutter-kekerasan-seksual.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396084129750:android:5fe8eb84173ed5a800fe77",
+        "android_client_info": {
+          "package_name": "com.example.pengaduan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIpYqsXAfzPgvzOaj66T7RO3iNL0A316E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
