@@ -22,7 +22,7 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
   @override
   void initState() {
     super.initState();
-      _fetchUserReports();
+    _fetchUserReports();
   }
 
   Future<void> _fetchUserReports() async {
@@ -69,8 +69,8 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
 
       setState(() {
         _reports = reports;
-        reports.sort((a, b) => 
-          (b['reportDate'] as DateTime).compareTo(a['reportDate'] as DateTime));
+        reports.sort((a, b) => (b['reportDate'] as DateTime)
+            .compareTo(a['reportDate'] as DateTime));
         _isLoading = false;
       });
     } catch (e) {
@@ -255,10 +255,13 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
                     ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed('/create-report');
+          Navigator.of(context).pushNamed('/report');
         },
         backgroundColor: const Color(0xFFE91E63),
-        child: Icon(Icons.add, color: Colors.white,),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         tooltip: 'Buat Pengaduan Baru',
       ),
     );
