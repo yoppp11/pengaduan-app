@@ -147,7 +147,7 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed('/create-report');
+                              Navigator.of(context).pushNamed('/report');
                             },
                           ),
                         ],
