@@ -1,4 +1,5 @@
 // login_screen.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,23 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         if (!mounted) return;
+
+        final checkRole = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
+
+        if (!checkRole.exists) {
+          setState(() {
+            _errorMessage = 'Akun tidak ditemukan. Silakan daftar terlebih dahulu.';
+          });
+          return;
+        }
+        if (checkRole.data()!['role'] == 'admin') {
+          Navigator.of(context).pushReplacementNamed('/admin-dashboard');
+          return;
+        }
+        
 
         Navigator.of(context).pushReplacementNamed('/home');
       } on FirebaseAuthException catch (e) {

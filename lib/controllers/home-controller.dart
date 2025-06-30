@@ -10,7 +10,7 @@ class HomeController {
     const String baseUrl = 'https://newsapi.org/v2';
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/everything?q=kekerasan+seksual&language=id&sortBy=publishedAt&apiKey=$apiKey'),
+          '$baseUrl/everything?q=kekerasan+dalam+rumah+tangga&language=id&sortBy=publishedAt&apiKey=$apiKey'),
     );
 
     if (response.statusCode == 200) {

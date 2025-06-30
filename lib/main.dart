@@ -5,7 +5,9 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pengaduan/firebase_options.dart';
 import 'package:pengaduan/views/add-report-page.dart';
+import 'package:pengaduan/views/admin-dashboard.dart';
 import 'package:pengaduan/views/auth-wrapper.dart';
+import 'package:pengaduan/views/chat-screen.dart';
 import 'package:pengaduan/views/detail-info.dart';
 import 'package:pengaduan/views/history-reports.dart';
 import 'package:pengaduan/views/home-page.dart';
@@ -63,6 +65,7 @@ class MyApp extends StatelessWidget {
         '/history': (context) => const ReportHistoryPage(),
         '/profile': (context) => const ProfilePage(),
         '/edit-profile': (context) => const UpdateProfilePage(),
+        '/counseling': (context) => const ChatScreen(isAdmin: false, peerId: 'Qv99NkMCMwb0NbOHlYZJt4e2sN32'),
         '/info-detail': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
           return InfoDetailPage(
@@ -71,7 +74,8 @@ class MyApp extends StatelessWidget {
             image: args['image']!,
           );
         },
-      },
+        '/admin-dashboard': (context) => const AdminDashboardScreen(),
+      }
     );
   }
 }

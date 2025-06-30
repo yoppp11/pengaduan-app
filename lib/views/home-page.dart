@@ -1,4 +1,3 @@
-// home_screen.dart
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const String baseUrl = 'https://newsapi.org/v2';
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/everything?q=kekerasan+seksual&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
+          '$baseUrl/everything?q=kekerasan+istri&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
     );
 
     if (response.statusCode == 200) {
@@ -54,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
 
+      print(data);
+
       return data;
     } else {
       throw Exception('Failed to load news');
@@ -63,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<EducationData>> promtGemini() async {
     final response = await Gemini.instance.prompt(parts: [
       Part.text(
-          'berikan saya sebuah informasi edukatif tentang kekerasan seksual guna mengisi data card saya, berikan dalam format json seperti berikut: { "title": "Judul" "description": "Deskripsi","image": "URL Gambar"}, jangan berikan data lain selain data json tersebut, saya hanya perlu data json tersebut. berikan 4 data saja')
+          'berikan saya sebuah informasi edukatif tentang kekerasan dalam rumah tangga guna mengisi data card saya, berikan dalam format json seperti berikut: { "title": "Judul" "description": "Deskripsi","image": "URL Gambar"}, jangan berikan data lain selain data json tersebut, saya hanya perlu data json tersebut. berikan 4 data saja')
     ]);
 
     final cleaned =
@@ -127,12 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: const Color(0xFFE91E63),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {
-              // Navigate to notifications
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.notifications, color: Colors.white),
+          //   onPressed: () {},
+          // ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: _logout,
@@ -228,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tagline dan Sambutan
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -258,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Anda tidak sendirian. Laporkan kekerasan seksual dan dapatkan bantuan segera.',
+                            'Anda tidak sendirian. Laporkan kekerasan dalam rumah tangga dan dapatkan bantuan segera.',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -270,7 +268,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Quick Action Buttons
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
@@ -317,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Icons.chat,
                                   Colors.green.shade700,
                                   () {
-                                    Navigator.pushNamed(context, '/cs_chat');
+                                    Navigator.pushNamed(context, '/counseling');
                                   },
                                 ),
                               ),
