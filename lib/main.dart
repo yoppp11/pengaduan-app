@@ -9,6 +9,7 @@ import 'package:pengaduan/views/admin-dashboard.dart';
 import 'package:pengaduan/views/auth-wrapper.dart';
 import 'package:pengaduan/views/chat-screen.dart';
 import 'package:pengaduan/views/detail-info.dart';
+import 'package:pengaduan/views/guide.dart';
 import 'package:pengaduan/views/history-reports.dart';
 import 'package:pengaduan/views/home-page.dart';
 import 'package:pengaduan/views/login-page.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/report': (context) => const AddReportScreen(),
+        '/guide': (context) => const GuideScreen(),
         '/history': (context) => const ReportHistoryPage(),
         '/profile': (context) => const ProfilePage(),
         '/edit-profile': (context) => const UpdateProfilePage(),
