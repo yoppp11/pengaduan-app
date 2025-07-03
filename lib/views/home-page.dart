@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const String baseUrl = 'https://newsapi.org/v2';
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/everything?q=kekerasan+istri&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
+          '$baseUrl/everything?q=kekerasan&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
     );
 
     if (response.statusCode == 200) {

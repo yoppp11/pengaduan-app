@@ -15,6 +15,7 @@ import 'package:pengaduan/views/home-page.dart';
 import 'package:pengaduan/views/login-page.dart';
 import 'package:pengaduan/views/profile-page.dart';
 import 'package:pengaduan/views/register-page.dart';
+import 'package:pengaduan/views/report-detail.dart';
 import 'package:pengaduan/views/update-profile.dart';
 
 Future<void> main() async {
@@ -75,6 +76,10 @@ class MyApp extends StatelessWidget {
             description: args['description']!,
             image: args['image']!,
           );
+        },
+        '/report-detail': (context) {
+          final reportId = ModalRoute.of(context)!.settings.arguments as String;
+          return ReportDetailPage(reportId: reportId);
         },
         '/admin-dashboard': (context) => const AdminDashboardScreen(),
       }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -24,6 +25,9 @@ class _AddReportScreenState extends State<AddReportScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
+
+  final String _cloudinaryCloudName = dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
+  final String _cloudinaryUploadPreset = dotenv.env['CLOUDINARY_PRESET'] ?? '';
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -104,6 +108,37 @@ class _AddReportScreenState extends State<AddReportScreen> {
     }
 
     return evidenceData;
+  }
+
+  Future<String> _uploadFileToCloudinary(File file) async {
+    try {
+      final url = Uri.parse(
+          'https://api.cloudinary.com/v1_1/$_cloudinaryCloudName/image/upload');
+      var request = http.MultipartRequest('POST', url)
+        ..fields['upload_preset'] = _cloudinaryUploadPreset;
+
+      request.files.add(await http.MultipartFile.fromPath(
+        'file',
+        file.path,
+        filename: path.basename(file.path),
+      ));
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        final respStr = await response.stream.bytesToString();
+        final Map<String, dynamic> responseData = json.decode(respStr);
+        return responseData['secure_url'];
+      } else {
+        final respStr = await response.stream.bytesToString();
+        print('Cloudinary upload error: ${response.statusCode} - $respStr');
+        throw Exception(
+            'Gagal mengunggah gambar ke Cloudinary: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error uploading file to Cloudinary: $e');
+      rethrow;
+    }
   }
 
   Future<void> _getLocation() async {
@@ -187,12 +222,15 @@ class _AddReportScreenState extends State<AddReportScreen> {
       });
 
       try {
-        List<Map<String, String>> evidenceData = await _prepareEvidenceData();
-
         String reportId = const Uuid().v4();
-
         User? user = _auth.currentUser;
         String userId = user?.uid ?? 'anonymous';
+
+        List<String> evidenceUrls = [];
+        for (File file in _evidenceFiles) {
+          String downloadUrl = await _uploadFileToCloudinary(file);
+          evidenceUrls.add(downloadUrl);
+        }
 
         Map<String, dynamic> reportData = {
           'reportId': reportId,
@@ -207,24 +245,13 @@ class _AddReportScreenState extends State<AddReportScreen> {
           'reportDate': Timestamp.now(),
           'status': 'new',
           'assignedTo': '',
-          'evidenceUrls': [],
-          'evidenceCount': evidenceData.length,
+          'evidenceUrls': evidenceUrls,
+          'evidenceCount': evidenceUrls.length,
           'contactPreference': _contactPreference,
           'isAnonymous': _isAnonymous,
         };
 
         await _firestore.collection('reports').doc(reportId).set(reportData);
-
-        if (evidenceData.isNotEmpty) {
-          for (int i = 0; i < evidenceData.length; i++) {
-            await _firestore
-                .collection('reports')
-                .doc(reportId)
-                .collection('evidence')
-                .doc('evidence_$i')
-                .set(evidenceData[i]);
-          }
-        }
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
