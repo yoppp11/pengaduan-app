@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const String baseUrl = 'https://newsapi.org/v2';
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/everything?q=kekerasan&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
+          '$baseUrl/everything?q=kekerasan+kampus&language=id&sortBy=publishedAt&pageSize=$limit&apiKey=$apiKey'),
     );
 
     if (response.statusCode == 200) {
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<EducationData>> promtGemini() async {
     final response = await Gemini.instance.prompt(parts: [
       Part.text(
-          'berikan saya sebuah informasi edukatif tentang kekerasan dalam rumah tangga guna mengisi data card saya, berikan dalam format json seperti berikut: { "title": "Judul" "description": "Deskripsi","image": "URL Gambar"}, jangan berikan data lain selain data json tersebut, saya hanya perlu data json tersebut. berikan 4 data saja')
+          'berikan saya sebuah informasi edukatif tentang  guna mengisi data card saya, berikan dalam format json seperti berikut: { "title": "Judul" "description": "Deskripsi","image": "URL Gambar"}, jangan berikan data lain selain data json tersebut, saya hanya perlu data json tersebut. berikan 4 data saja')
     ]);
 
     final cleaned =
@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Anda tidak sendirian. Laporkan kekerasan dalam rumah tangga dan dapatkan bantuan segera.',
+                            'Anda tidak sendirian. Laporkan kekerasan di lingkungan kampus dan dapatkan bantuan segera.',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,

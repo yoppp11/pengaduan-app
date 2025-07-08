@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart'; 
+import 'package:url_launcher/url_launcher.dart';
 
 class GuideScreen extends StatelessWidget {
   const GuideScreen({Key? key}) : super(key: key);
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
-      print('Could not launch $phoneNumber');
+      print('Tidak dapat melakukan panggilan ke $phoneNumber');
     }
   }
 
@@ -21,11 +18,11 @@ class GuideScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Butuh Bantuan',
+          'Bantuan & Panduan PPKPT',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFFE91E63),
-        iconTheme: const IconThemeData(color: Colors.white), 
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -33,14 +30,14 @@ class GuideScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Dalam situasi darurat, setiap detik berharga. Halaman ini menyediakan informasi kontak penting dan panduan singkat untuk membantu Anda mengambil tindakan yang tepat.',
+              'Halaman ini menyediakan informasi penting dan langkah-langkah yang dapat Anda lakukan jika mengalami atau menyaksikan kekerasan di lingkungan kampus. Keselamatan dan kesejahteraan Anda adalah prioritas.',
               style: TextStyle(fontSize: 16, height: 1.5),
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 25),
 
             const Text(
-              'Nomor Telepon Darurat:',
+              'Kontak Penting Kampus:',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -51,48 +48,41 @@ class GuideScreen extends StatelessWidget {
 
             _buildEmergencyContactCard(
               context,
-              'Polisi (Panggilan Darurat)',
+              'Satuan Tugas PPKPT Kampus',
+              '0812-3456-7890',
+              'Tim kampus yang bertanggung jawab menangani laporan kekerasan seksual dan kekerasan lainnya di lingkungan perguruan tinggi.',
+              Icons.verified_user,
+              Colors.pink.shade700,
+            ),
+            _buildEmergencyContactCard(
+              context,
+              'Layanan Konseling Kampus',
+              '0813-9876-1234',
+              'Dapatkan dukungan psikologis dari konselor kampus secara rahasia dan profesional.',
+              Icons.psychology,
+              Colors.teal.shade700,
+            ),
+            _buildEmergencyContactCard(
+              context,
+              'Biro Kemahasiswaan',
+              '021-12345678',
+              'Untuk informasi dan pengaduan terkait kehidupan kampus serta perlindungan hak mahasiswa.',
+              Icons.account_balance,
+              Colors.indigo.shade700,
+            ),
+            _buildEmergencyContactCard(
+              context,
+              'Polisi - Unit Perlindungan Perempuan dan Anak (PPA)',
               '110',
-              'Hubungi jika ada tindak kriminal, kecelakaan, atau kondisi darurat lainnya yang memerlukan intervensi polisi.',
+              'Hubungi jika situasi membutuhkan intervensi pihak kepolisian secara langsung.',
               Icons.local_police,
               Colors.blue.shade700,
             ),
-            _buildEmergencyContactCard(
-              context,
-              'Pusat Krisis Kekerasan Dalam Rumah Tangga',
-              '021-112', 
-              'Pusat layanan yang memberikan dukungan, konseling, dan bantuan hukum bagi korban KDRT.',
-              Icons.family_restroom,
-              Colors.purple.shade700,
-            ),
-            _buildEmergencyContactCard(
-              context,
-              'Ambulans / Gawat Darurat Medis',
-              '118 / 119',
-              'Panggilan untuk situasi medis darurat seperti kecelakaan serius, serangan jantung, atau kondisi kesehatan kritis lainnya.',
-              Icons.medical_services,
-              Colors.red.shade700,
-            ),
-            _buildEmergencyContactCard(
-              context,
-              'Pemadam Kebakaran',
-              '113',
-              'Hubungi jika terjadi kebakaran atau insiden yang memerlukan penanganan dari dinas pemadam kebakaran.',
-              Icons.fire_truck,
-              Colors.orange.shade700,
-            ),
-             _buildEmergencyContactCard(
-              context,
-              'Basarnas (SAR)',
-              '115',
-              'Untuk operasi pencarian dan penyelamatan dalam bencana alam, kecelakaan laut/udara, atau orang hilang.',
-              Icons.safety_divider,
-              Colors.lightGreen.shade700,
-            ),
+
             const SizedBox(height: 30),
 
             const Text(
-              'Apa yang Harus Dilakukan Saat Kondisi Darurat:',
+              'Langkah yang Dapat Anda Lakukan:',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -102,39 +92,34 @@ class GuideScreen extends StatelessWidget {
             const SizedBox(height: 15),
 
             _buildEducationPoint(
-              '1. Tetap Tenang',
-              'Tarik napas dalam-dalam. Ketenangan membantu Anda berpikir jernih dan mengambil keputusan yang tepat.',
-              Icons.self_improvement,
+              '1. Tetap Tenang dan Cari Tempat Aman',
+              'Jika memungkinkan, segera menjauh dari pelaku dan cari tempat aman di dalam kampus.',
+              Icons.safety_check,
             ),
             _buildEducationPoint(
-              '2. Amankan Diri dan Orang Lain',
-              'Prioritaskan keselamatan. Jika memungkinkan, menjauh dari bahaya langsung.',
-              Icons.shield,
+              '2. Catat Kejadian',
+              'Tulis rincian kejadian selengkap mungkin: waktu, lokasi, pelaku, dan saksi (jika ada).',
+              Icons.note_alt,
             ),
             _buildEducationPoint(
-              '3. Hubungi Nomor Darurat',
-              'Telepon nomor yang sesuai sesegera mungkin. Berikan informasi yang jelas dan ringkas mengenai lokasi dan jenis darurat.',
-              Icons.phone_in_talk,
+              '3. Hubungi Pihak Terkait',
+              'Laporkan ke Satgas PPKPT, dosen, atau pihak yang dipercaya. Gunakan layanan kampus yang tersedia.',
+              Icons.report,
             ),
             _buildEducationPoint(
-              '4. Berikan Informasi Akurat',
-              'Sebutkan lokasi kejadian (alamat lengkap atau patokan), jenis insiden, jumlah korban (jika ada), dan kondisi yang terlihat.',
-              Icons.info_outline,
+              '4. Simpan Bukti',
+              'Jangan hapus pesan, foto, atau barang bukti yang berkaitan dengan kejadian. Ini dapat membantu proses investigasi.',
+              Icons.archive,
             ),
             _buildEducationPoint(
-              '5. Ikuti Instruksi',
-              'Dengarkan baik-baik instruksi dari operator telepon darurat atau petugas yang tiba di lokasi.',
-              Icons.record_voice_over,
+              '5. Dapatkan Dukungan',
+              'Bicaralah dengan konselor atau orang yang Anda percaya. Dukungan emosional sangat penting.',
+              Icons.support,
             ),
             _buildEducationPoint(
-              '6. Dokumentasikan (Jika Aman)',
-              'Jika aman untuk dilakukan, ambil foto atau video sebagai bukti. Ini dapat membantu penyelidikan lebih lanjut.',
-              Icons.camera_alt,
-            ),
-            _buildEducationPoint(
-              '7. Jangan Berangkat Sendiri',
-              'Jika Anda adalah korban atau saksi kekerasan, jangan coba menghadapi situasi sendiri. Cari bantuan dari orang terpercaya atau pihak berwenang.',
-              Icons.group,
+              '6. Jangan Takut Melapor',
+              'Anda berhak atas lingkungan kampus yang aman. Semua laporan akan ditangani secara rahasia dan profesional.',
+              Icons.shield_moon,
             ),
             const SizedBox(height: 30),
           ],
@@ -144,7 +129,13 @@ class GuideScreen extends StatelessWidget {
   }
 
   Widget _buildEmergencyContactCard(
-      BuildContext context, String title, String number, String description, IconData icon, Color color) {
+    BuildContext context,
+    String title,
+    String number,
+    String description,
+    IconData icon,
+    Color color,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 15),
       elevation: 4,
@@ -160,34 +151,30 @@ class GuideScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      )),
                   const SizedBox(height: 5),
-                  Text(
-                    description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                  ),
+                  Text(description,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700])),
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton.icon(
-                      onPressed: () => _makePhoneCall(number.replaceAll(' ', '')), // Hapus spasi dari nomor
+                      onPressed: () => _makePhoneCall(number.replaceAll(' ', '')),
                       icon: const Icon(Icons.call, color: Colors.white),
-                      label: Text(
-                        'Panggil $number',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
+                      label: Text('Panggil $number',
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: color,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
                       ),
                     ),
                   ),
@@ -212,13 +199,11 @@ class GuideScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    )),
                 const SizedBox(height: 4),
                 Text(
                   description,
