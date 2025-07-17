@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path;
+import 'package:pengaduan/widgets/audio-preview.dart';
+import 'package:pengaduan/widgets/video-preview.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ReportDetailPage extends StatefulWidget {
@@ -162,13 +164,28 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
         const Text('Bukti Pendukung',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
-        ...evidenceUrls.map((url) => Container(
+        ...evidenceUrls.map((url) {
+          final ext = path.extension(url).toLowerCase();
+          if (['.jpg', '.jpeg', '.png', '.webp'].contains(ext)) {
+            return Container(
               margin: const EdgeInsets.only(bottom: 12),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(url, fit: BoxFit.cover),
               ),
-            )),
+            );
+          } else if (['.mp4', '.mov'].contains(ext)) {
+            return VideoPreview(url: url);
+          } else if (['.mp3', '.wav', '.m4a'].contains(ext)) {
+            return AudioPreview(url: url);
+          } else {
+            return ListTile(
+              leading: const Icon(Icons.insert_drive_file),
+              title: Text('File tidak dikenali'),
+              subtitle: Text(url),
+            );
+          }
+        }).toList(),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'package:pengaduan/widgets/upload-button.dart';
 import 'package:uuid/uuid.dart';
 
 class AddReportScreen extends StatefulWidget {
@@ -29,6 +31,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
   final String _cloudinaryCloudName = dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
   final String _cloudinaryUploadPreset = dotenv.env['CLOUDINARY_PRESET'] ?? '';
 
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _nim = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -112,8 +116,18 @@ class _AddReportScreenState extends State<AddReportScreen> {
 
   Future<String> _uploadFileToCloudinary(File file) async {
     try {
+      final ext = path.extension(file.path).toLowerCase();
+      String resourceType = 'image';
+
+      if (['.mp4', '.mov', '.avi', '.mkv'].contains(ext)) {
+        resourceType = 'video';
+      } else if (['.mp3', '.wav', '.m4a'].contains(ext)) {
+        resourceType = 'video';
+      }
+
       final url = Uri.parse(
-          'https://api.cloudinary.com/v1_1/$_cloudinaryCloudName/image/upload');
+          'https://api.cloudinary.com/v1_1/$_cloudinaryCloudName/$resourceType/upload');
+
       var request = http.MultipartRequest('POST', url)
         ..fields['upload_preset'] = _cloudinaryUploadPreset;
 
@@ -133,11 +147,34 @@ class _AddReportScreenState extends State<AddReportScreen> {
         final respStr = await response.stream.bytesToString();
         print('Cloudinary upload error: ${response.statusCode} - $respStr');
         throw Exception(
-            'Gagal mengunggah gambar ke Cloudinary: ${response.statusCode}');
+            'Gagal mengunggah file ke Cloudinary: ${response.statusCode}');
       }
     } catch (e) {
       print('Error uploading file to Cloudinary: $e');
       rethrow;
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() {
+        _evidenceFiles.add(File(video.path));
+        _evidenceFileNames.add(path.basename(video.path));
+      });
+    }
+  }
+
+  Future<void> _pickAudio() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'wav', 'm4a'],
+    );
+    if (result != null && result.files.single.path != null) {
+      setState(() {
+        _evidenceFiles.add(File(result.files.single.path!));
+        _evidenceFileNames.add(path.basename(result.files.single.path!));
+      });
     }
   }
 
@@ -235,6 +272,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
         Map<String, dynamic> reportData = {
           'reportId': reportId,
           'userId': userId,
+          'name': _name.text.isNotEmpty ? _name.text : user?.displayName ?? '',
+          'nim': _nim.text,
           'title': _titleController.text,
           'description': _descriptionController.text,
           'location': _latitude != null && _longitude != null
@@ -341,6 +380,70 @@ class _AddReportScreenState extends State<AddReportScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    const Text(
+                      'Nama Pelapor',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _name,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan nama pelapor',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE91E63)),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Nama pelapor tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'NIM Pelapor',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _nim,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan nim pelapor',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE91E63)),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'NIM pelapor tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
                     const Text(
                       'Judul Laporan',
                       style: TextStyle(
@@ -511,71 +614,33 @@ class _AddReportScreenState extends State<AddReportScreen> {
                           child: InkWell(
                             onTap:
                                 _evidenceFiles.length < 3 ? _pickImage : null,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _evidenceFiles.length < 3
-                                    ? Colors.grey.shade100
-                                    : Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.photo_library,
-                                    color: _evidenceFiles.length < 3
-                                        ? Colors.grey.shade700
-                                        : Colors.grey.shade500,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Galeri',
-                                    style: TextStyle(
-                                      color: _evidenceFiles.length < 3
-                                          ? Colors.grey.shade700
-                                          : Colors.grey.shade500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child: buildUploadButton(
+                                Icons.photo_library, 'Galeri'),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: InkWell(
                             onTap:
                                 _evidenceFiles.length < 3 ? _takePhoto : null,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _evidenceFiles.length < 3
-                                    ? Colors.grey.shade100
-                                    : Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.camera_alt,
-                                    color: _evidenceFiles.length < 3
-                                        ? Colors.grey.shade700
-                                        : Colors.grey.shade500,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Kamera',
-                                    style: TextStyle(
-                                      color: _evidenceFiles.length < 3
-                                          ? Colors.grey.shade700
-                                          : Colors.grey.shade500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            child:
+                                buildUploadButton(Icons.camera_alt, 'Kamera'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: InkWell(
+                            onTap:
+                                _evidenceFiles.length < 3 ? _pickVideo : null,
+                            child: buildUploadButton(Icons.videocam, 'Video'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: InkWell(
+                            onTap:
+                                _evidenceFiles.length < 3 ? _pickAudio : null,
+                            child: buildUploadButton(Icons.audiotrack, 'Audio'),
                           ),
                         ),
                       ],
@@ -588,6 +653,16 @@ class _AddReportScreenState extends State<AddReportScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: _evidenceFiles.length,
                           itemBuilder: (context, index) {
+                            final file = _evidenceFiles[index];
+                            final fileExt =
+                                path.extension(file.path).toLowerCase();
+
+                            bool isImage = ['.jpg', '.jpeg', '.png', '.webp']
+                                .contains(fileExt);
+                            bool isVideo = ['.mp4', '.mov', '.avi', '.mkv']
+                                .contains(fileExt);
+                            bool isAudio =
+                                ['.mp3', '.wav', '.m4a'].contains(fileExt);
                             return Stack(
                               children: [
                                 Container(
@@ -596,10 +671,21 @@ class _AddReportScreenState extends State<AddReportScreen> {
                                   margin: const EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    image: DecorationImage(
-                                      image: FileImage(_evidenceFiles[index]),
-                                      fit: BoxFit.cover,
-                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: isImage
+                                        ? Image.file(file, fit: BoxFit.cover)
+                                        : isVideo
+                                            ? const Icon(Icons.videocam,
+                                                size: 40, color: Colors.pink)
+                                            : isAudio
+                                                ? const Icon(Icons.audiotrack,
+                                                    size: 40,
+                                                    color: Colors.pink)
+                                                : const Icon(
+                                                    Icons.insert_drive_file,
+                                                    size: 40),
                                   ),
                                 ),
                                 Positioned(

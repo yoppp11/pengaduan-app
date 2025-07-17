@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Report {
   final String reportId;
-  final String? userId; 
+  final String? userId;
+  final String name;
+  final String nim;
   final String title;
   final String description;
   final String status;
@@ -19,6 +21,8 @@ class Report {
   Report({
     required this.reportId,
     this.userId,
+    required this.name,
+    required this.nim,
     required this.title,
     required this.description,
     required this.status,
@@ -38,6 +42,8 @@ class Report {
     return Report(
       reportId: doc.id,
       userId: data['userId'],
+      name: data['name'] ?? 'No Name',
+      nim: data['nim'] ?? 'No NIM',
       title: data['title'] ?? 'No Title',
       description: data['description'] ?? 'No Description',
       status: data['status'] ?? 'new',
@@ -75,6 +81,8 @@ class Report {
     return Report(
       reportId: reportId,
       userId: userId,
+      name: name,
+      nim: nim,
       title: title,
       description: description,
       status: status ?? this.status,
