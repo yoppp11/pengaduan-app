@@ -87,6 +87,21 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('Nama Pelapor'),
+                    Text(widget.report.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const Divider(),
+                    Text('NIM Pelapor',
+                        style: Theme.of(context).textTheme.titleSmall),
+                    Text(widget.report.nim,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const Divider(),
                     Text('Judul Laporan:',
                         style: Theme.of(context).textTheme.titleSmall),
                     Text(widget.report.title,
